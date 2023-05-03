@@ -1,4 +1,8 @@
 import math
+import re
+import string
+#from random import random
+import random
 
 
 class Node:
@@ -11,7 +15,7 @@ class Node:
 
 
 def get_info():
-    done=False
+    done = False
     while not done:
         email = input("Enter your email: ")
         name = input("Enter your name: ")
@@ -21,10 +25,10 @@ def get_info():
         budget_count = int(input("Enter your budget count: "))
         data = {'email': email, 'name': name, 'password': password, 'ph_no': ph_no, 'address': address,
                 'budget_count': budget_count}
-        val_mail=[data.get("email")]
-        exits=input("Press n to exit or another key to continue: ")
-        if exits=="n" or exits=="N":done=True
-        return data,val_mail
+        # val_mail=[data.get("email")]
+        exits = input("Press n to exit or another key to continue: ")
+        if exits == "n" or exits == "N": done = True
+        return data
 
 
 def insert_data_to_tree(tree: Node, data: list):  # insert_tree_data
@@ -58,11 +62,11 @@ def insert_sec_data(node: Node, name: str):
         if not node.store_sec_tree:
             node.store_sec_tree = []
 
-        idx=index(node.store_sec_tree,name)
-        node.store_sec_tree=node.store_sec_tree[:idx]+[name]+node.store_sec_tree[idx:]
+        idx = index(node.store_sec_tree, name)
+        node.store_sec_tree = node.store_sec_tree[:idx] + [name] + node.store_sec_tree[idx:]
         print(node.store_sec_tree)
         # convert_to_Ascii(node.store_sec_tree)
-        print(node.store_sec_tree)
+        # print(node.store_sec_tree)
     elif node.data < len(name):
         insert_sec_data(node.right, name)
     else:
@@ -148,32 +152,37 @@ def create_sec_tree():
         return ascii_store'''
 
 
-def search_data(node: Node, name: str):
+def search_data(node: Node, name: str,count):
     if node.data == name[0]:
         if not node.link_sec_tree:
             return None
-        return search_sec_data(node.link_sec_tree, name)
+        count+=1
+        return search_sec_data(node.link_sec_tree, name,count)
     elif node.data < name[0]:
-        return search_data(node.right, name)
+        count+=1
+        return search_data(node.right, name,count)
     else:
-        return search_data(node.left, name)
+        count+=1
+        return search_data(node.left, name,count)
 
 
-def search_sec_data(node: Node, name: str):
+def search_sec_data(node: Node, name: str,count):
+    count+=1
     if node.data == len(name):
         if not node.store_sec_tree:
             return None
         print(node.store_sec_tree)
         # return node.store_sec_tree[node.store_sec_tree.index(name)]
-        return linear_search(node.store_sec_tree, name)
+        count+=1
+        return linear_search(node.store_sec_tree, name,count)
         print(node.store_sec_tree)
     elif node.data < len(name):
-        return search_sec_data(node.right, name)
+        return search_sec_data(node.right, name,count)
     else:
-        return search_sec_data(node.left, name)
+        return search_sec_data(node.left, name,count)
 
 
-def selection_sort(ascii_store: list, email_list: list):
+"""def selection_sort(ascii_store: list, email_list: list):
     n = len(ascii_store)
 
     for i in range(n - 1):
@@ -186,7 +195,7 @@ def selection_sort(ascii_store: list, email_list: list):
         email_list[i], email_list[min] = email_list[min], email_list[i]
     return ascii_store
     print(selection_sort(ascii_store, email_list))
-    print(email_list)
+    print(email_list)"""
 
 
 def find(temp_mail):
@@ -196,7 +205,7 @@ def find(temp_mail):
             return i
 
 
-def jump_search(A, item):
+"""def jump_search(A, item):
     print("Searching the name.....")
     n = len(A)  # Length of the array
     m = int(math.sqrt(n))  # Step length
@@ -214,35 +223,83 @@ def jump_search(A, item):
     B = A[i:i + m]  # Step 5
     print("Processing Block - {}".format(B))
 
-    return linear_search(B, item, i)
+    return linear_search(B, item, i)"""
 
 
-def linear_search(B, item):
+def linear_search(B, item,count):
     # print("\t Entering Linear Search")
     i = 0
 
     while i != len(B):
         if B[i] == item:
             # return f"found in index {loc+i} "
-            print('found')
+            print('found',end='')
+            print(count,'times')
             return B[i]
         i += 1
     return 'not found'
 
 
-first_tree = create_tree()
+regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
 
-ndata,email=get_info()
-#name = input("Enter your email: ")
-# store_SE_value = []
-while email:
-    #insert_data(first_tree, email)
 
-    # ascii = convert_to_Ascii(name)
-    # store_SE_value.append(ascii)
+def check(email):
+    if (re.search(regex, email)):
+        return True
+    else:
+        return False
 
-#search_name = input("Enter the search name: ")
-# print(jump_search(store_sec_tree, name))
-# print(' ')
-# print(store_SE_value)
-#print(search_data(first_tree, search_name))
+
+def random_char():
+    username = ''.join(random.choice(string.ascii_letters) for _ in range(random.randint(6, 12)))
+    return f"{username}@gmail.com"
+
+
+# def generate_random_email():
+#     username=''.join(random.choice(string.ascii_lowercase)for _ in range(random.randint(6,12)))
+#     domain=''.join(random.choice(string.ascii_lowercase)for _ in range(random.randint(6,10)))
+#     tld=random.choice(['com','net','org'])
+#     return f"{username}@{domain}.{tld}"
+
+
+if __name__ == '__main__':
+    #first_tree = create_tree()
+    email_list = []
+    first_tree = create_tree()
+
+    index = 0
+
+    while index < 10:
+        # email=generate_random_email()
+        email = random_char()
+        insert_data(first_tree, email)
+        count=0
+        search_data(first_tree,email,count)
+        #print(email)
+        #email_list.append(email)
+        index += 1
+    # print(email_list)
+    #
+    # insert_data(first_tree, email)
+
+    # ndata=get_info()
+    # name = input("Enter your email: ")
+    # while name:
+    #     # store_SE_value = []
+    #     # val_mail=[ndata.get("email")]
+    #     if check(name):
+    #         # while name:
+    #         insert_data(first_tree, name)
+    #         name = input("Enter your email: ")
+    #     else:
+    #         print("Invalid Email! Please reenter your email!")
+    #         name = input("Enter your email: ")
+    #
+    #     # ascii = convert_to_Ascii(name)
+    #     # store_SE_value.append(ascii)
+    #
+    #search_name = input("Enter the search name: ")
+    # # print(jump_search(store_sec_tree, name))
+    # # print(' ')
+    # # print(store_SE_value)
+    #print(search_data(first_tree, search_name))
