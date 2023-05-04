@@ -1,6 +1,9 @@
+import json
 import math
 import random
 import string
+from timeit import default_timer as timer
+import time
 
 
 class Node:
@@ -38,35 +41,34 @@ def insert_data_to_tree(tree: Node, data: list):  # insert_tree_data
                 insert_data_to_tree(tree.right, data[mid + 1:])
 
 
-def insert_sec_data(node: Node, name: str):
+def insert_sec_data(node: Node, info):
+    name=info.get("email")
     # print(node.data, node.store_sec_tree)
-    if node.data == len(name):
 
+    if node.data == len(name):
         print(node.store_sec_tree)
         if not node.store_sec_tree:
             node.store_sec_tree = []
 
-        idx = index(node.store_sec_tree, name)
-        node.store_sec_tree = node.store_sec_tree[:idx] + [name] + node.store_sec_tree[idx:]
-        # print(node.store_sec_tree)
-        # convert_to_Ascii(node.store_sec_tree)
-        # print(node.store_sec_tree)
+        node.store_sec_tree.append(info)
+        print(node.store_sec_tree)
     elif node.data < len(name):
-        insert_sec_data(node.right, name)
+        insert_sec_data(node.right, info)
     else:
-        insert_sec_data(node.left, name)
+        insert_sec_data(node.left, info)
 
 
 # second tree
-def insert_data(node: Node, name: str):
+def insert_data(node: Node, info: dict):
+    name=info.get("email")
     if node.data == name[0]:
         if not node.link_sec_tree:
             node.link_sec_tree = create_sec_tree()
-        insert_sec_data(node.link_sec_tree, name)
+        insert_sec_data(node.link_sec_tree, info)
     elif node.data < name[0]:
-        insert_data(node.right, name)
+        insert_data(node.right, info)
     else:
-        insert_data(node.left, name)
+        insert_data(node.left, info)
 
 
 def compare_str(str1, str2):
@@ -217,23 +219,26 @@ def random_char():
     username = ''.join(random.choice(string.ascii_lowercase) for _ in range(random.randint(6, 12)))
     return f"{username}@gmail.com"
 
+
 if __name__ == '__main__':
     # first_tree = create_tree()
 
-    count = 1000
-    email_list=[]
+    email_list = []
+    count = 10
     fir_tree = create_tree()
     while count > 0:
-        email = random_char()
-        insert_data(fir_tree, email)
-        cot = 0
-        search_data(fir_tree, email, cot)
+            for i in range(10):
+                with open('datasaving.json') as f:
+                    data = json.load(f)
+                #email=(data.get(f"{i}").get('email'))
 
-        count = count - 1
-    with open('listfile.txt', 'w') as filehandle:
-        for listitem in email:
-            filehandle.write(f'{listitem}\n')
-        #print(filehandle)
+                insert_data(fir_tree, data.get(f"{i}"))
+                cot = 0
+                #search_data(fir_tree, email, cot)
+
+                count = count - 1
+
+
 sum = 0
 for i in total:
     sum += i
